@@ -91,6 +91,25 @@ const API = {
         .catch((err) => reject(err));
     });
   },
+  changeName: (id, body) => {
+    return new Promise(async (resolve, reject) => {
+      await instance
+        .post(`/admin/user/changeName/${id}`, body)
+        .then((res) => resolve(res))
+        .catch((err) => reject(err));
+    });
+  },
+
+  deleteGameByUserId: (id) => {
+    return new Promise(async (resolve, reject) => {
+      await instance
+        .delete(`/admin/game/user/${id}`)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => reject(err));
+    });
+  },
 };
 
 export default API;

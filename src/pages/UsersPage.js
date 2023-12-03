@@ -24,16 +24,20 @@ function MainPage() {
   const [pending, setPending] = useState(false);
   const handleDelete = async (id) => {
     setPending(true);
-    await API.deleteUserById(id)
+    await API.deleteGameByUserId(id)
       .then((res) => {
-        alert(`Delete user ${id} successfully!`);
-        setPending(false);
-        navigate("/main");
+        API.deleteUserById(id)
+          .then((res) => {
+            alert(`Delete user ${id} successfully!`);
+            setPending(false);
+            navigate("/main");
+          })
+          .catch((err) => {
+            alert("Server error! Please try again");
+            setPending(false);
+          });
       })
-      .catch((err) => {
-        alert("Server error! Please try again");
-        setPending(false);
-      });
+      .catch((err) => console.log(err));
   };
   useEffect(() => {
     const token = getCookie("token");
@@ -50,7 +54,7 @@ function MainPage() {
       .then((res) => {
         console.log(res);
         setHistory(res.data.games);
-      })  
+      })
       .catch((err) => {
         setHistory(null);
       });
@@ -77,6 +81,10 @@ function MainPage() {
                   </thead>
                   {user ? (
                     <tbody>
+                      <tr>
+                        <td colSpan={1}>NAME</td>
+                        <td colSpan={3}>{user.NAME}</td>
+                      </tr>
                       <tr>
                         <td colSpan={1}>USERNAME</td>
                         <td colSpan={3}>{user.USERNAME}</td>

@@ -1,15 +1,35 @@
 import React, { useRef } from "react";
 import { useEffect } from "react";
 import API from "../axios/API";
-
+import { useState } from "react";
+import SpinnerLoading from "./Loading";
 const EditForm = (props) => {
   const user = props.user;
   const callback = props.callback;
   const inputRef = useRef();
+  const [pending, setPending] = useState(false);
+  const [name, setName] = useState(user.NAME);
   useEffect(() => {
     inputRef.current.focus();
   }, []);
-  const updateUsers = async () => {};
+  const changeName = async () => {
+    console.log(name);
+    if (name.length === 0) {
+      alert("Please enter user name!");
+    } else {
+      setPending(true);
+      API.changeName(user.ID, { name })
+        .then((res) => {
+          alert("Update user's name successfully!");
+          setPending(false);
+          window.location.reload();
+        })
+        .catch((err) => {
+          alert("Have some error, please try again!");
+          setPending(false);
+        });
+    }
+  };
   return (
     <div className="w-full mt-10 p-10 text-left flex justify-center">
       <div className="w-[60%] border border-red-600 p-4">
@@ -18,7 +38,8 @@ const EditForm = (props) => {
           <input
             ref={inputRef}
             className="flex-1 p-2 border border-black"
-            value={user.NAME}
+            onChange={(e) => setName(e.target.value)}
+            value={name}
           />
         </div>
         <div className="p-2 flex gap-3">
@@ -41,11 +62,17 @@ const EditForm = (props) => {
           >
             Back
           </button>
-          <button className="w-1/2 p-2 bg-red-600 rounded-lg text-white">
+          <button
+            className="w-1/2 p-2 bg-red-600 rounded-lg text-white"
+            onClick={() => {
+              changeName();
+            }}
+          >
             Save
           </button>
         </div>
       </div>
+      {pending && <SpinnerLoading />}
     </div>
   );
 };
